@@ -79,4 +79,15 @@ Open Package.xml and add the following
 <depend>std_msgs</depend>
 ```
 
+Open CMakeLsts.txt
+```
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+```
+Add executables
+```
+add_executable(talker src/publisher.cpp)
+ament_target_dependencies(talker rclcpp std_msgs)
+```
+
 
