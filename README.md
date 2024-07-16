@@ -243,5 +243,126 @@ Go to the turtlesim simulator
 ros2 run turtlesim turtlesim_node
 ros2 run turtlesim turtle_teleop_key
 ```
+The excersizes can be completed as per the guidelines
+https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Introducing-Turtlesim/Introducing-Turtlesim.html
+
+Now move turtle using following python code
+```
+#include <functional>
+#include <memory>
+#include <sstream>
+#include <string>
+
+
+
+#include "rclcpp/rclcpp.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+
+class TurtleRotate : public rclcpp::Node
+{
+public:
+    TurtleRotate() : Node("turtle_rotate")
+    {
+        publisher_ = this->create_publisher<geometry_msgs::msg::Twist>("/turtle1/cmd_vel", 10);
+        timer_ = this->create_wall_timer(
+            std::chrono::milliseconds(100),
+            std::bind(&TurtleRotate::timer_callback, this));
+    }
+
+private:
+    void timer_callback()
+    {
+        auto message = geometry_msgs::msg::Twist();
+        message.linear.x = 0.5; 
+        message.angular.z = 0.5;  // Rotate with a constant angular velocity
+        publisher_->publish(message);
+    }
+
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
+    rclcpp::TimerBase::SharedPtr timer_;
+};
+
+int main(int argc, char *argv[])
+{
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<TurtleRotate>());
+    rclcpp::shutdown();
+    return 0;
+}
+```
+You have to complete the package building procedure first and complete the experiments
+
+## Launch file
+Python launch files are a significant change in ros2
+Use the following code in a tex file inside a launch folder 
+```
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='turtlesim',
+            executable='turtlesim_node',
+            name='sim'
+        ),
+
+        Node(
+            package='tfexample',
+            executable='move',
+            name='move',
+            parameters=[
+                {'target_frame': LaunchConfiguration('target_frame')}
+            ]
+        ),
+    ])
+```
+Now build your package and run the code.
+
+## Calling a service using a python code
+```
+import rclpy
+from rclpy.node import Node
+from turtlesim.srv import Spawn
+
+
+class TurtlesimSpawner(Node):
+    def __init__(self):
+        super().__init__('turtlesim_spawner')
+        self.client = self.create_client(Spawn, 'spawn')
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Service not available, waiting again...')
+        self.req = Spawn.Request()
+
+    def spawn_turtle(self, x, y, theta, name):
+        self.req.x = x
+        self.req.y = y
+        self.req.theta = theta
+        self.req.name = name
+        self.future = self.client.call_async(self.req)
+        rclpy.spin_until_future_complete(self, self.future)
+        if self.future.result() is not None:
+            self.get_logger().info('Spawned turtle with name: %s' % self.future.result().name)
+        else:
+            self.get_logger().error('Failed to spawn turtle')
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = TurtlesimSpawner()
+    node.spawn_turtle(2.0, 2.0, 0.0, 'new_turtle')
+    node.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+```
+
+## Challenge?? Move two turtles in a screen in circular shape
 
 
