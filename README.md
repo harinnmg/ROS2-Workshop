@@ -234,7 +234,14 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 ```
-and do the same process
+and do the same process for displaying the subscriber code.
 
+# Turtlesim
+Now we can familarize the concept of topics, services and actions
+Go to the turtlesim simulator
+```
+ros2 run turtlesim turtlesim_node
+ros2 run turtlesim turtle_teleop_key
+```
 
 
