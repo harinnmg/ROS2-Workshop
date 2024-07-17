@@ -245,7 +245,10 @@ ros2 run turtlesim turtle_teleop_key
 ```
 The excersizes can be completed as per the guidelines
 https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Introducing-Turtlesim/Introducing-Turtlesim.html
-
+Move the turtle
+```
+ros2 topic pub /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}"
+```
 Now move turtle using following python code
 ```
 #include <functional>
