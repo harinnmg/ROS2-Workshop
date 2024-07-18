@@ -356,7 +356,7 @@ def generate_launch_description():
             executable='move',
             name='move',
             
-            ]
+          
         ),
     ])
 ```
