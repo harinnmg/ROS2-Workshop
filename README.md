@@ -355,8 +355,7 @@ def generate_launch_description():
             package='tfexample',
             executable='move',
             name='move',
-            parameters=[
-                {'target_frame': LaunchConfiguration('target_frame')}
+            
             ]
         ),
     ])
