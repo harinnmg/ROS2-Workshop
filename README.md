@@ -129,6 +129,10 @@ int main(int argc, char * argv[])
 }
 ```
 and complete the similar process
+Come to workspace and type the following
+```
+colcon build
+```
 # Running a Node
 ```
 source /opt/ros/humble/setup.bash
