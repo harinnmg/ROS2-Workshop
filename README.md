@@ -1,4 +1,4 @@
-# ROS2-Workshop-Saintgits
+# ROS2-Workshop
 
 The basics of ROS2 can be found here
 https://ieeexplore.ieee.org/document/7743223
