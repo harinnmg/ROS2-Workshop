@@ -357,6 +357,22 @@ def generate_launch_description():
     ])
 ```
 Now build your package and run the code.
+## Recordying and Play Back
+```
+ros2 run turtlesim turtlesim_node
+```
+In new terminal
+```
+ros2 run turtlesim turtle_teleop_key
+```
+In new terminal 
+```
+ros2 bag record -o <bag file name> <topic name>
+```
+In new terminal
+```
+ros2 bag play <topic name>
+```
 
 ## Calling a service using a python code
 ```
