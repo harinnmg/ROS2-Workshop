@@ -356,7 +356,13 @@ def generate_launch_description():
         ),
     ])
 ```
-Now build your package and run the code.
+Now build your package by adding following line
+```
+install(
+  DIRECTORY launch 
+  DESTINATION share/${PROJECT_NAME}
+)
+```
 ## Recordying and Play Back
 ```
 ros2 run turtlesim turtlesim_node
@@ -415,5 +421,8 @@ if __name__ == '__main__':
 ```
 
 ## Challenge?? Move two turtles in a screen in circular shape
+
+# One turtle follow another
+```
 
 
