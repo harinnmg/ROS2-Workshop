@@ -16,40 +16,74 @@ Launch file for RVIZ
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch.actions import DeclareLaunchArgument, ExecuteProcess
 import xml.etree.ElementTree as ElementTree
-  def generate_launch_description():
-  # Get the package share directory
-  pkg_share = get_package_share_directory('test1')
-  # Define the path to the URDF file
-  urdf_file_name = 'first.urdf'
-  urdf_path = os.path.join(pkg_share, 'urdf', urdf_file_name)
-  with open(urdf_path, 'rb') as f:
-    xml_data = f.read()
-  xml_parsed = ElementTree.fromstring(xml_data)
-  return LaunchDescription([
-  Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        name='joint_state_publisher',
- ),
-  Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
-        arguments=[urdf_path]
-),
-  Node(
+
+
+def generate_launch_description():
+    # Get the package share directory
+    pkg_share = get_package_share_directory('test2')
+
+    # Define the path to the world file
+    world_file_name = 'empty.world'
+    world_path = os.path.join(pkg_share, 'urdf', world_file_name)
+
+    # Define the path to the URDF file
+    urdf_file_name = 'test.urdf'
+    urdf_path = os.path.join(pkg_share, 'urdf', urdf_file_name)
+    with open(urdf_path, 'rb') as f:
+     xml_data = f.read()
+    xml_parsed = ElementTree.fromstring(xml_data)
+    return LaunchDescription([
+        # Start Gazebo server with the world file
+        DeclareLaunchArgument(name='use_sim_time', default_value='true', description='Use simulation (Gazebo) clock if true'),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([os.path.join(
+                get_package_share_directory('gazebo_ros'), 'launch', 'gzserver.launch.py')]),
+            launch_arguments={'world': world_path}.items(),
+        ),
+        
+        # Start Gazebo client
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([os.path.join(
+                get_package_share_directory('gazebo_ros'), 'launch', 'gzclient.launch.py')]),
+        ),
+
+        Node(
+             package='joint_state_publisher',
+             executable='joint_state_publisher',
+             name='joint_state_publisher',
+             ),
+ 
+        # Publish the URDF to the robot_description topic
+        Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            output='screen',
+            arguments=[urdf_path]
+        ),
+        Node(
         package='rviz2',
         executable='rviz2',
         name='rviz2',
         output='screen',
         arguments=['-d', os.path.join(pkg_share, 'rviz', 'hello1.rviz')],
-),
-])
+        ),
+        # Spawn the robot entity
+        Node(
+            package="gazebo_ros",
+            executable="spawn_entity.py",
+            arguments=['-entity', 'test3', '-topic', 'robot_description', "-x", "0.0", "-y", "0.0", "-z", "0.0"],
+            output="screen"
+        )
+    ])
+
 if __name__ == '__main__':
-        generate_launch_description()
-# URDF for Gazebo
+    generate_launch_description()
+
 ```
 <?xml version="1.0"?>
 <robot name="multipleshapes">
